@@ -1,15 +1,6 @@
 const express = require("express");
 const app = express();
 
-//Routing
-app.use("/login", (req, res) => {
-  res.end("This is Login");
-});
-
-app.use("/about", (req, res) => {
-  res.end("This is about");
-});
-app.use("/", (request, response) => {
-  response.end("Hello World");
-}); //root path
+const authRouter = require("../modules/auth/auth.router");
+app.use("/auth", authRouter);
 module.exports = app; //exporting the express frameworks
