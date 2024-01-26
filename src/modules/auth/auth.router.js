@@ -44,6 +44,13 @@ app.post("/login", (req, res) => {
 app.get("/logout", (req, res) => {
   res.end("LOGOUT");
 });
+app.get("/login/admin", (req, res, next) => {
+  res.json({
+    result: null,
+    message: "Admin Panel",
+    meta: null,
+  });
+});
 app.get("/me", (req, res) => {
   res.end("Profile Access");
 });
@@ -61,6 +68,7 @@ app.put("/set-password/:userID", (req, res) => {
 app.delete("/user/:userID", (req, res) => {
   res.end("This is home");
 });
+
 app.use("/", (request, response) => {
   response.end("Hello World");
 }); //root path
