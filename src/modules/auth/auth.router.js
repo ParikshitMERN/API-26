@@ -1,76 +1,34 @@
-const express = require("express");
-// const app = express();
+// const express = require("express");
+// const app = express.Router();
+const app = require("express").Router(); //Converting above two lines in one single line
+const auth = require("../../middleware/auth.middleware");
 
-const app = express.Router();
-//Routing
-//Register
-app.post("/register", (req, res, next) => {
-  // res.end("This is register");
-  res.json({
-    result: null,
-    message: "Your Account Has Been Created",
-    meta: null,
-  });
-});
-//Verify
-app.post("/verify-otp/", (req, res, next) => {
-  res.end("1234");
-});
-app.post("/activate/:token", (req, res, next) => {
-  //tokenID => token
-  // request url -> params
-  const params = req.params;
+const permissionCheck = require("../../middleware/rbac.middleware");
+const { ROLES } = require("../../config/constant.config");
+// const { registerfunction } = require("./auth.controller");
+const authctrl = require("./auth.controller");
 
-  res.json({
-    result: params,
-    message: "You Have Successfully Activated",
-    meta: null,
-  }); //res.end returns the data in text formtat res.json sent the value in json format
-});
+app.post("/register", authctrl.registerfunction); //Verify
+app.post("/verify-otp/", authctrl.verify_otp);
+app.post("/activate/:token", authctrl.token);
 
 //send email for forget password
-app.post("/forgot-password", (req, res) => {
-  res.end("Forgot Password");
-});
+app.post("/forgot-password", authctrl.forgotpassword);
 //set new password
-app.post("/update-password/:token", (req, res) => {
-  res.end("Reset Password");
-});
+app.post("/update-password/:token", authctrl.updatepassword);
 //Login
-app.post("/login", (req, res) => {
-  //post since it creates the data
-  res.end("This is Login");
-});
-app.get("/logout", (req, res) => {
-  res.end("LOGOUT");
-});
-app.get("/login/admin", (req, res, next) => {
-  res.json({
-    result: null,
-    message: "Admin Panel",
-    meta: null,
-  });
-});
-app.get("/me", (req, res) => {
-  res.end("Profile Access");
-});
-app.get("/password", (req, res) => {
-  res.end("This is password");
-});
+app.post("/login", authctrl.login);
+app.get("/logout", auth, authctrl.logout);
+app.get("/admin", auth, permissionCheck(ROLES.ADMIN), authctrl.admin);
+app.get("/me", auth, authctrl.profile);
+app.get("/password", authctrl.password);
 app.put("/user-update/:userID", (req, res) => {
   res.end("Updated");
 });
 
-app.put("/set-password/:userID", (req, res) => {
-  //: is used to get or set dynamic values for eg userID can be dyncamic
-  //userID => userId
-});
-app.delete("/user/:userID", (req, res) => {
-  res.end("This is home");
-});
+app.put("/set-password/:userID", auth, permissionCheck(ROLES.ADMIN), authctrl.setpassword);
+app.delete("/user/:userID", authctrl.delete);
 
-app.use("/", (request, response) => {
-  response.end("Hello World");
-}); //root path
+app.use("/", authctrl.main); //root path
 
 module.exports = app;
