@@ -1,12 +1,11 @@
 const permissionCheck = (role) => {
   return (req, res, next) => {
     // To check weather the role is logged in the site or not
-    try{
+    try {
       next();
-    }catch(exception){
-      res.status(403).json()
+    } catch (exception) {
+      next({ code: 403, message: "Role Not Matched" });
     }
-    
   };
 };
 

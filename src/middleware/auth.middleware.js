@@ -1,9 +1,9 @@
 const auth = (req, res, next) => {
-  try{
+  try {
     next(); //login pass
-  
-  }catch(exception){
-    res.status(401).json
+  } catch (exception) {
+    next({ code: 401, message: "Unable to Login" });
+    // res.status(401).json
   }
 };
 

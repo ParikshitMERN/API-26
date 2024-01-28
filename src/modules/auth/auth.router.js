@@ -26,8 +26,8 @@ app.put("/user-update/:userID", (req, res) => {
   res.end("Updated");
 });
 
-app.put("/set-password/:userID", auth, permissionCheck(ROLES.ADMIN), authctrl.setpassword);
-app.delete("/user/:userID", authctrl.delete);
+app.put("/set-password/:userID",authctrl.setpassword);
+app.delete("/user/:userID", auth, permissionCheck(ROLES.ADMIN),authctrl.delete);
 
 app.use("/", authctrl.main); //root path
 
