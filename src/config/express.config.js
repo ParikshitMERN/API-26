@@ -9,7 +9,9 @@ app.use(
     extended: true,
   })
 );
+
 app.use(router);
+
 app.use((req, res, next) => {
   next({ code: 404, message: "Not Found" });
 });

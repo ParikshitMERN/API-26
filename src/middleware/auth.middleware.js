@@ -1,8 +1,10 @@
+const Unauthorized = require("../exception/unauthorized.exception");
+
 const auth = (req, res, next) => {
   try {
     next(); //login pass
   } catch (exception) {
-    next({ code: 401, message: "Unable to Login" });
+    next(new Unauthorized());
     // res.status(401).json
   }
 };

@@ -1,19 +1,12 @@
-const Joi = require("joi");
 class AuthController {
   registerfunction = async (req, res, next) => {
     // res.end("This is register");
 
     try {
       const data = req.body;
-      const registerSchema = Joi.object({
-        name: Joi.string().min(2).max(50).required(),
-        role: Joi.string().regex(/^(admin | seller |customer)$/),
-        email: Joi.string().email().required,
-      });
 
-      const response = await registerSchema.validateAsync(data);
       res.json({
-        result: response,
+        result: null,
         message: "Success",
         meta: null,
       });
@@ -28,6 +21,26 @@ class AuthController {
       });
     }
   };
+
+  login = async (req, res, next) => {
+    try {
+      const data = req.body;
+
+      res.json({
+        result: null,
+        message: "You Have Been Logged In Successfully",
+        meta: null,
+      });
+    } catch (exception) {
+      console.log("Login Error", exception);
+      next({
+        data: { name: "Username not found" },
+        code: 422,
+        message: "Validation Error",
+      });
+    }
+  };
+
   verify_otp = (req, res, next) => {
     res.json({
       result: null,
@@ -53,11 +66,6 @@ class AuthController {
 
   updatepassword = (req, res) => {
     res.end("Reset Password");
-  };
-
-  login = (req, res) => {
-    //post since it creates the data
-    res.end("This is Login");
   };
 
   logout = (req, res) => {

@@ -7,8 +7,11 @@ const permissionCheck = require("../../middleware/rbac.middleware");
 const { ROLES } = require("../../config/constant.config");
 // const { registerfunction } = require("./auth.controller");
 const authctrl = require("./auth.controller");
-
-app.post("/register", authctrl.registerfunction); //Verify
+const bodyValidator = require("../../middleware/validator.middleware");
+const { registerSchema } = require("./auth.request");
+const { loginSchema } = require("./auth.request");
+app.post("/register", bodyValidator(registerSchema), authctrl.registerfunction); //Verify
+app.post("/login", bodyValidator(loginSchema), authctrl.login);
 app.post("/verify-otp/", authctrl.verify_otp);
 app.post("/activate/:token", authctrl.token);
 
@@ -26,8 +29,13 @@ app.put("/user-update/:userID", (req, res) => {
   res.end("Updated");
 });
 
-app.put("/set-password/:userID",authctrl.setpassword);
-app.delete("/user/:userID", auth, permissionCheck(ROLES.ADMIN),authctrl.delete);
+app.put("/set-password/:userID", authctrl.setpassword);
+app.delete(
+  "/user/:userID",
+  auth,
+  permissionCheck(ROLES.ADMIN),
+  authctrl.delete
+);
 
 app.use("/", authctrl.main); //root path
 
