@@ -1,9 +1,22 @@
+const Joi = require("joi");
 class AuthController {
-  registerfunction = (req, res, next) => {
+  registerfunction = async (req, res, next) => {
     // res.end("This is register");
 
     try {
-      throw "";
+      const data = req.body;
+      const registerSchema = Joi.object({
+        name: Joi.string().min(2).max(50).required(),
+        role: Joi.string().regex(/^(admin | seller |customer)$/),
+        email: Joi.string().email().required,
+      });
+
+      const response = await registerSchema.validateAsync(data);
+      res.json({
+        result: response,
+        message: "Success",
+        meta: null,
+      });
     } catch (exception) {
       console.log("Registerfun Error", exception);
       next({
