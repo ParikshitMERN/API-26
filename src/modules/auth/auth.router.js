@@ -10,7 +10,15 @@ const authctrl = require("./auth.controller");
 const bodyValidator = require("../../middleware/validator.middleware");
 const { registerSchema } = require("./auth.request");
 const { loginSchema } = require("./auth.request");
-app.post("/register", bodyValidator(registerSchema), authctrl.registerfunction); //Verify
+const uploader = require("../../middleware/uploader.middleware");
+
+app.post(
+  "/register",
+  uploader.single("profile"),
+  // uploader.array("cover"),
+  bodyValidator(registerSchema),
+  authctrl.registerfunction
+); //Verify
 app.post("/login", bodyValidator(loginSchema), authctrl.login);
 app.post("/verify-otp/", authctrl.verify_otp);
 app.post("/activate/:token", authctrl.token);

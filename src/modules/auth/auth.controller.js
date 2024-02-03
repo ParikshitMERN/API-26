@@ -4,9 +4,9 @@ class AuthController {
 
     try {
       const data = req.body;
-
+      data.file = req.file.filename;
       res.json({
-        result: null,
+        result: data,
         message: "Success",
         meta: null,
       });

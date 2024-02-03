@@ -10,6 +10,7 @@ app.use(
   })
 );
 
+app.use("/asset", express.static("./public/uploads"));
 app.use(router);
 
 app.use((req, res, next) => {
