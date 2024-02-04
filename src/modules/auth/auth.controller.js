@@ -20,8 +20,11 @@ class AuthController {
         //success
         const response = await emailSvc.sendEmail({
           to: data.email,
-          subject: "Test Mail",
-          message: "<strong>Hello World</strong>",
+          subject: "Activate Your Account",
+          message: `Dear ${data.name}<br/>,
+          Your otp code is: <b> ${data.otp}</b><br/>,
+          Your otp code is going to expore on <b>${data.expiryTime}</b><br/>
+          Verify your account within 2 hours`,
         });
         res.json({ data: response, message: "Register Failed", meta: null });
       } else {

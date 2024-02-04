@@ -6,7 +6,7 @@ class EmailService {
     try {
       this.transporter = nodemailer.createTransport({
         host: "sandbox.smtp.mailtrap.io",
-        port: 465,
+        port: 587,
         auth: {
           username: "89f6689c4498cf",
           pass: "1e88df89f65eb0",
