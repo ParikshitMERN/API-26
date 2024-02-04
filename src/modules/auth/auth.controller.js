@@ -26,7 +26,7 @@ class AuthController {
           Your otp code is going to expore on <b>${data.expiryTime}</b><br/>
           Verify your account within 2 hours`,
         });
-        res.json({ data: response, message: "Register Failed", meta: null });
+        res.json({ data: response, message: "Test Failed", meta: null });
       } else {
         //fail
         throw new AppError({
