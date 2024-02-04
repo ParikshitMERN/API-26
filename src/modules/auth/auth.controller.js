@@ -1,24 +1,40 @@
+const AppError = require("../../exception/app.exception");
+const { randomString } = require("../../utilities/helper");
+const emailSvc = require("../../services/email.service");
 class AuthController {
   registerfunction = async (req, res, next) => {
     // res.end("This is register");
 
     try {
       const data = req.body;
-      data.file = req.file.filename;
-      res.json({
-        result: data,
-        message: "Success",
-        meta: null,
-      });
+      // data.file = req.file.filename;
+
+      // data.activationToken = randomString(100);
+      data.otp = randomString(6); //expiry date
+      const timeAfterTwohours = new Date(Date.now() + (60 * 2 + 60 * 1000));
+      data.expiryTime = timeAfterTwohours;
+      data.status = "inactive";
+
+      let userRegister = data;
+      if (userRegister) {
+        //success
+        const response = await emailSvc.sendEmail({
+          to: data.email,
+          subject: "Test Mail",
+          message: "<strong>Hello World</strong>",
+        });
+        res.json({ data: response, message: "Register Failed", meta: null });
+      } else {
+        //fail
+        throw new AppError({
+          data: null,
+          message: "Registration Fail",
+          code: 400,
+        });
+      }
     } catch (exception) {
       console.log("Registerfun Error", exception);
-      next({
-        data: {
-          name: "Name is not Registered",
-        },
-        code: 422,
-        message: "Validation Error",
-      });
+      next(exception);
     }
   };
 
@@ -33,11 +49,7 @@ class AuthController {
       });
     } catch (exception) {
       console.log("Login Error", exception);
-      next({
-        data: { name: "Username not found" },
-        code: 422,
-        message: "Validation Error",
-      });
+      next(exception);
     }
   };
 
