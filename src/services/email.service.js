@@ -8,8 +8,8 @@ class EmailService {
         host: "sandbox.smtp.mailtrap.io",
         port: 587,
         auth: {
-          username: "89f6689c4498cf",
-          pass: "1e88df89f65eb0",
+          user: "14984663638e03",
+          pass: "5449ae6aa124ec",
         },
       });
     } catch (exception) {

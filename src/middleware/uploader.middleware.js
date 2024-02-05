@@ -4,8 +4,9 @@ const { randomString } = require("../utilities/helper");
 const ValidationError = require("../exception/validation.exception");
 const myStorage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const path = "./public/uploads";
-    if (fs.existsSync(path)) {
+    const path = "./public/uploads/";
+
+    if (!fs.existsSync(path)) {
       fs.mkdirSync(path, { recursive: true });
     }
     cb(null, path);
@@ -13,6 +14,7 @@ const myStorage = multer.diskStorage({
   filename: (req, file, cb) => {
     const ext = file.originalname.split(".").pop();
     let fileName = Date.now() + "-" + randomString(10) + "." + ext;
+    console.log(fileName);
     cb(null, fileName);
   },
 });
