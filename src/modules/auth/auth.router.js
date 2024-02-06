@@ -8,7 +8,11 @@ const { ROLES } = require("../../config/constant.config");
 // const { registerfunction } = require("./auth.controller");
 const authctrl = require("./auth.controller");
 const bodyValidator = require("../../middleware/validator.middleware");
-const { registerSchema } = require("./auth.request");
+const {
+  registerSchema,
+  otpVerifySchema,
+  passwordSetSchema,
+} = require("./auth.request");
 const { loginSchema } = require("./auth.request");
 const uploader = require("../../middleware/uploader.middleware");
 
@@ -20,8 +24,12 @@ app.post(
   authctrl.registerfunction
 ); //Verify
 app.post("/login", bodyValidator(loginSchema), authctrl.login);
-app.post("/verify-otp/", authctrl.verify_otp);
-app.post("/activate/:token", authctrl.token);
+app.post("/verify-otp/", bodyValidator(otpVerifySchema), authctrl.verify_otp);
+app.post(
+  "/activate/:token",
+  bodyValidator(passwordSetSchema),
+  authctrl.activateUser
+);
 
 //send email for forget password
 app.post("/forgot-password", authctrl.forgotpassword);

@@ -26,7 +26,7 @@ class AuthController {
           Your otp code is going to expore on <b>${data.expiryTime}</b><br/>
           Verify your account within 2 hours`,
         });
-        res.json({ data: response, message: "Test Failed", meta: null });
+        res.json({ data: userRegister, message: "Test Failed", meta: null });
       } else {
         //fail
         throw new AppError({
@@ -57,11 +57,46 @@ class AuthController {
   };
 
   verify_otp = (req, res, next) => {
+    const userDetail = {
+      name: "Parikshit Maharjan",
+      email: "parikshit@gmail.com",
+      role: "admin",
+      otp: "J4kcAC",
+      expiryTime: "2024-02-06T14:19:41.486Z",
+      status: "inactive",
+      authToken: randomString(100),
+    };
     res.json({
-      result: null,
+      result: userDetail,
       message: "Your Account Has Been Verified",
       meta: null,
     });
+  };
+  activateUser = (req, res, next) => {
+    try {
+      let token = req.params.token;
+      let password = req.body.password;
+
+      const userDetail = {
+        name: "Parikshit Maharjan",
+        email: "parikshit@gmail.com",
+        role: "admin",
+        otp: null,
+        expiryTime: null,
+        status: "active",
+        authToken: null,
+        password: password,
+      };
+    } catch (exception) {
+      consolel.log(exception);
+      next(
+        new AppError({
+          data: exception,
+          message: "Activation Failed",
+          code: 500,
+        })
+      );
+    }
   };
   token = (req, res, next) => {
     //tokenID => token

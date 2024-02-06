@@ -7,6 +7,7 @@ const bodyValidator = (schema) => {
       await schema.validateAsync(data);
       next();
     } catch (exception) {
+      console.log(exception);
       const errorMsg = {};
       exception.details.map((err) => {
         errorMsg[err.context.label] = err.message;
