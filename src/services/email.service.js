@@ -1,3 +1,4 @@
+require("dotenv").config();
 const AppError = require("../exception/app.exception");
 const nodemailer = require("nodemailer");
 class EmailService {
@@ -5,11 +6,11 @@ class EmailService {
   constructor() {
     try {
       this.transporter = nodemailer.createTransport({
-        host: "sandbox.smtp.mailtrap.io",
-        port: 587,
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
         auth: {
-          user: "14984663638e03",
-          pass: "5449ae6aa124ec",
+          user: process.env.SMTP_USER,
+          pass: process.env.SMTP_PASSWORD,
         },
       });
     } catch (exception) {
@@ -26,7 +27,7 @@ class EmailService {
     try {
       const response = await this.transporter.sendMail({
         to: to,
-        from: "noreply@mern26.com",
+        from: process.env.SMTP_FROM,
         subject: subject,
         html: message,
       });

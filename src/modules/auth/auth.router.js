@@ -23,7 +23,7 @@ app.post(
   bodyValidator(registerSchema),
   authctrl.registerfunction
 ); //Verify
-app.post("/login", bodyValidator(loginSchema), authctrl.login);
+app.post("/login", authctrl.login);
 app.post("/verify-otp/", bodyValidator(otpVerifySchema), authctrl.verify_otp);
 app.post(
   "/activate/:token",

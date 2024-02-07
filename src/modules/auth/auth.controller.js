@@ -1,6 +1,9 @@
+require("dotenv").config();
 const AppError = require("../../exception/app.exception");
 const { randomString } = require("../../utilities/helper");
 const emailSvc = require("../../services/email.service");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 class AuthController {
   registerfunction = async (req, res, next) => {
     // res.end("This is register");
@@ -41,28 +44,13 @@ class AuthController {
     }
   };
 
-  login = async (req, res, next) => {
-    try {
-      const data = req.body;
-
-      res.json({
-        result: null,
-        message: "You Have Been Logged In Successfully",
-        meta: null,
-      });
-    } catch (exception) {
-      console.log("Login Error", exception);
-      next(exception);
-    }
-  };
-
   verify_otp = (req, res, next) => {
     const userDetail = {
       name: "Parikshit Maharjan",
       email: "parikshit@gmail.com",
       role: "admin",
-      otp: "J4kcAC",
-      expiryTime: "2024-02-06T14:19:41.486Z",
+      otp: "6ALtlr",
+      expiryTime: "2024-02-07T14:04:07.117Z",
       status: "inactive",
       authToken: randomString(100),
     };
@@ -77,6 +65,8 @@ class AuthController {
       let token = req.params.token;
       let password = req.body.password;
 
+      const hash = bcrypt.hashSync(password, 10);
+
       const userDetail = {
         name: "Parikshit Maharjan",
         email: "parikshit@gmail.com",
@@ -85,8 +75,13 @@ class AuthController {
         expiryTime: null,
         status: "active",
         authToken: null,
-        password: password,
+        password: hash,
       };
+      res.json({
+        result: userDetail,
+        message: "Your Password Has Been Set Successfully",
+        meta: null,
+      });
     } catch (exception) {
       consolel.log(exception);
       next(
@@ -98,6 +93,68 @@ class AuthController {
       );
     }
   };
+
+  login = async (req, res, next) => {
+    try {
+      let data = req.body;
+      const userDetail = {
+        _id: "hexcode-->ObjectId",
+        name: "Parikshit Maharjan",
+        email: "parikshit@gmail.com",
+        role: "admin",
+        otp: null,
+        expiryTime: null,
+        status: "active",
+        authToken: null,
+        password:
+          "$2a$10$l4wCf1CGPbY4z2boEwNGceCXZJX12UhcbFxzGzKPxiHWY/VnlyaAu",
+      };
+
+      const verify = bcrypt.compareSync(data.password, userDetail.password);
+      // const verify_email = bcrypt.compareSync(data.email, userDetail.email);
+      if (verify) {
+        const payload = { id: userDetail._id };
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: Date.now() + 7200000,
+        });
+
+        const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+          expiresIn: "1 day",
+        });
+
+        res.json({
+          result: {
+            token: token,
+            type: "Bearer",
+            refreshToken: refreshToken,
+          },
+          message: "You Have Been Logged In",
+          meta: null,
+        });
+      } else {
+        throw new AppError({
+          data: null,
+          message: "Credential Doesnot Match",
+          code: 400,
+        });
+      }
+    } catch (exception) {
+      console.log("Login Error", exception);
+      next(exception);
+    }
+  };
+
+  profile = (req, res, next) => {
+    let user = req.authUser;
+    res.json({
+      result: user,
+      message: "Your Profile",
+      meta: null,
+    });
+  };
+
+  l;
   token = (req, res, next) => {
     //tokenID => token
     // request url -> params
@@ -129,9 +186,7 @@ class AuthController {
       meta: null,
     });
   };
-  profile = (req, res) => {
-    res.end("Profile Access");
-  };
+
   password = (req, res) => {
     res.end("This is password");
   };
