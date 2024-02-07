@@ -22,7 +22,6 @@ const auth = (req, res, next) => {
       } else {
         const data = jwt.verify(token, process.env.JWT_SECRET);
         const userDetail = {
-          _id: "hexcode-->ObjectId",
           name: "Parikshit Maharjan",
           email: "parikshit@gmail.com",
           role: "admin",
