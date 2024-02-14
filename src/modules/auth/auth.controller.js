@@ -4,32 +4,27 @@ const { randomString } = require("../../utilities/helper");
 const emailSvc = require("../../services/email.service");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const authSvc = require("./auth.service");
 class AuthController {
   registerfunction = async (req, res, next) => {
     // res.end("This is register");
 
     try {
-      const data = req.body;
-      // data.file = req.file.filename;
-
-      // data.activationToken = randomString(100);
-      data.otp = randomString(6); //expiry date
-      const timeAfterTwohours = new Date(Date.now() + (60 * 2 + 60 * 1000));
-      data.expiryTime = timeAfterTwohours;
-      data.status = "inactive";
-
-      let userRegister = data;
+      const data = authSvc.transformDataToRegister(req.body, req.file);
+      let userRegister = await authSvc.registerUser(data);
       if (userRegister) {
         //success
-        const response = await emailSvc.sendEmail({
-          to: data.email,
-          subject: "Activate Your Account",
-          message: `Dear ${data.name}<br/>,
-          Your otp code is: <b> ${data.otp}</b><br/>,
-          Your otp code is going to expore on <b>${data.expiryTime}</b><br/>
-          Verify your account within 2 hours`,
+        await authSvc.sendRegistrationEmail(
+          data.email,
+          data.name,
+          data.otp,
+          data.expiryTime
+        );
+        res.json({
+          data: userRegister,
+          message: "Your accound has been registered",
+          meta: null,
         });
-        res.json({ data: userRegister, message: "Test Failed", meta: null });
       } else {
         //fail
         throw new AppError({
@@ -44,21 +39,41 @@ class AuthController {
     }
   };
 
-  verify_otp = (req, res, next) => {
-    const userDetail = {
-      name: "Parikshit Maharjan",
-      email: "parikshit@gmail.com",
-      role: "admin",
-      otp: "6ALtlr",
-      expiryTime: "2024-02-07T14:04:07.117Z",
-      status: "inactive",
-      authToken: randomString(100),
-    };
-    res.json({
-      result: userDetail,
-      message: "Your Account Has Been Verified",
-      meta: null,
-    });
+  verify_otp = async (req, res, next) => {
+    try {
+      const { email, otp } = req.body;
+      const userDetail = await authSvc.verifyOtpCode({
+        email: email,
+        otp: otp,
+      });
+      if (!userDetail) {
+        throw new AppError({ message: "Incorrect OTP", code: 400 });
+      } else {
+        //expirytime
+        const now = Date.now();
+        const expiryTime = userDetail.expiryTime.getTime();
+        if (expiryTime < now) {
+          throw new AppError({ message: "Token Expired", code: 400 });
+        } else {
+          const token = randomString(100);
+          const response = await authSvc.updateUser(userDetail._id, {
+            authtoken: token,
+          });
+          if (response) {
+            res.json({
+              result: token,
+              message: "OTP Code Verified",
+              meta: null,
+            });
+          } else {
+            throw new AppError({ message: "User Not Found", code: 400 });
+          }
+        }
+      }
+    } catch (exception) {
+      console.log("Verifyotp", exception);
+      next(exception);
+    }
   };
   activateUser = (req, res, next) => {
     try {

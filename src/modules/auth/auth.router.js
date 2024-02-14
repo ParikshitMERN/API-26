@@ -44,7 +44,7 @@ app.get("/password", authctrl.password);
 app.put("/user-update/:userID", (req, res) => {
   res.end("Updated");
 });
-
+app.get("/lo");
 app.put("/set-password/:userID", authctrl.setpassword);
 app.delete(
   "/user/:userID",

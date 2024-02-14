@@ -1,4 +1,5 @@
 const express = require("express");
+require("./mongodb.config");
 const app = express();
 
 const router = require("../routes/router");

@@ -22,8 +22,8 @@ const auth = (req, res, next) => {
       } else {
         const data = jwt.verify(token, process.env.JWT_SECRET);
         const userDetail = {
-          name: "Parikshit Maharjan",
-          email: "parikshit@gmail.com",
+          " name": "Parikshit Maharjan",
+          email: "parikshit+maharjan@gmail.com",
           role: "admin",
           otp: null,
           expiryTime: null,
